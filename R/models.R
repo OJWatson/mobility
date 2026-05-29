@@ -509,14 +509,25 @@ mobility <- function(
   if (is.null(names(N_dest))) stop(msg)
 
   # check data dimensions
+  #
+  # M and D do not need to be square: rectangular origin-destination inputs
+  # are valid so long as they share the same number of origins (rows) and
+  # destinations (columns). For example, a pooled-origin fit may use a 1 x J
+  # matrix of observed flows and a matching 1 x J matrix of distances.
   check_dims <- c(
     identical(dim(M)[1], dim(D)[1]),
-    identical(dim(M)[1], dim(D)[2]),
+    identical(dim(M)[2], dim(D)[2]),
     identical(dim(M)[1], length(N_orig)),
     identical(dim(M)[2], length(N_dest))
   )
 
-  if (any(!check_dims)) stop('Dimensions of input data do not match')
+  if (any(!check_dims)) {
+    stop(
+      'Dimensions of input data do not match. M and D must have the same ',
+      'number of origins (rows) and destinations (columns), but they do not ',
+      'need to be square.'
+    )
+  }
 
   # check data names
   check_names <- c(
